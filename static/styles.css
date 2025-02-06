@@ -1,0 +1,29 @@
+/* static/styles.css */
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    color: #333;
+}
+
+h1, h2 {
+    color: #222;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+.success {
+    color: green;
+}
+
+.error {
+    color: red;
+}

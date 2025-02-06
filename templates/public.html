@@ -1,0 +1,75 @@
+<!-- templates/public.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Attraction Reviews</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+      /* Full-page grid container */
+      body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+      }
+      .grid-container {
+        display: grid;
+        height: 100vh;
+        width: 100vw;
+      }
+      {% if total_sources == 2 %}
+      .grid-container {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr;
+      }
+      {% elif total_sources == 4 %}
+      .grid-container {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+      }
+      {% elif total_sources == 6 %}
+      .grid-container {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr;
+      }
+      {% elif total_sources == 8 %}
+      .grid-container {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr 1fr;
+      }
+      {% else %}
+      .grid-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr;
+      }
+      {% endif %}
+      .grid-item {
+        border: 2px solid #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .grid-item h2 {
+        font-size: 3vw;
+        margin: 10px;
+        text-align: center;
+      }
+      .grid-item .count {
+        font-size: 10vw;
+        font-weight: bold;
+        margin: 10px;
+      }
+    </style>
+</head>
+<body>
+    <div class="grid-container">
+      {% for result in results %}
+        <div class="grid-item">
+          <h2>{{ result.title }}</h2>
+          <div class="count">{{ result.count }}</div>
+        </div>
+      {% endfor %}
+    </div>
+</body>
+</html>
