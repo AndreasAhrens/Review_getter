@@ -1,4 +1,3 @@
-<!-- templates/admin.html -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,60 +5,72 @@
     <title>Admin Panel</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <style>
-      fieldset { margin-bottom: 20px; padding: 10px; }
-      label { display: inline-block; width: 200px; }
-      input[type="text"] { width: 60%; padding: 5px; margin-bottom: 10px; }
+        body { font-family: Arial, sans-serif; background: #f8f8f8; }
+        .container { width: 80%; margin: 20px auto; }
+        fieldset { margin-bottom: 20px; padding: 10px; background: #fff; border-radius: 5px; }
+        label { display: inline-block; width: 250px; margin-bottom: 5px; }
+        input[type="text"] { width: 60%; padding: 5px; margin-bottom: 10px; }
+        button { padding: 10px 20px; font-size: 1rem; }
+        .oauth { margin-top: 20px; }
+        .message { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
     </style>
 </head>
 <body>
-    <h1>Admin Panel</h1>
-    <p><a href="{{ url_for('admin_logout') }}">Logout</a></p>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <ul>
-          {% for category, message in messages %}
-            <li class="{{ category }}">{{ message }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
-    <form method="POST">
-        <h2>API Keys</h2>
-        <div>
-            <label for="tripadvisor_api_key">TripAdvisor API Key:</label>
-            <input type="text" name="tripadvisor_api_key" id="tripadvisor_api_key" value="{{ setting.tripadvisor_api_key or '' }}">
+    <div class="container">
+        <h1>Admin Panel</h1>
+        <p><a href="{{ url_for('admin_logout') }}">Logout</a></p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul>
+                    {% for category, message in messages %}
+                        <li class="message {{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        <form method="POST" action="{{ url_for('admin_panel') }}">
+            <h2>API Keys</h2>
+            <div>
+                <label for="tripadvisor_api_key">TripAdvisor API Key:</label>
+                <input type="text" name="tripadvisor_api_key" id="tripadvisor_api_key" value="{{ setting.tripadvisor_api_key or '' }}">
+            </div>
+            <div>
+                <label for="google_api_key">Google API Key:</label>
+                <input type="text" name="google_api_key" id="google_api_key" value="{{ setting.google_api_key or '' }}">
+            </div>
+            <h2>Review Sources</h2>
+            {% for i in range(1, 5) %}
+            <fieldset>
+                <legend>Pair {{ i }}</legend>
+                <div>
+                    <label for="ta_identifier_{{ i }}">TripAdvisor Identifier:</label>
+                    <input type="text" name="ta_identifier_{{ i }}" id="ta_identifier_{{ i }}" value="{{ pairs[i]['TripAdvisor'].identifier if pairs[i].get('TripAdvisor') else '' }}">
+                </div>
+                <div>
+                    <label for="ta_title_{{ i }}">TripAdvisor Title:</label>
+                    <input type="text" name="ta_title_{{ i }}" id="ta_title_{{ i }}" value="{{ pairs[i]['TripAdvisor'].title if pairs[i].get('TripAdvisor') else '' }}">
+                </div>
+                <div>
+                    <label for="google_identifier_{{ i }}">Google Identifier (full resource name):</label>
+                    <input type="text" name="google_identifier_{{ i }}" id="google_identifier_{{ i }}" value="{{ pairs[i]['Google'].identifier if pairs[i].get('Google') else '' }}">
+                </div>
+                <div>
+                    <label for="google_title_{{ i }}">Google Title:</label>
+                    <input type="text" name="google_title_{{ i }}" id="google_title_{{ i }}" value="{{ pairs[i]['Google'].title if pairs[i].get('Google') else '' }}">
+                </div>
+            </fieldset>
+            {% endfor %}
+            <button type="submit">Save Settings</button>
+        </form>
+        <div class="oauth">
+            {% if oauth_enabled %}
+                <p><a href="{{ url_for('google_oauth') }}">Authorize Google OAuth</a></p>
+            {% else %}
+                <p>Google OAuth is not enabled (required modules missing).</p>
+            {% endif %}
         </div>
-        <div>
-            <label for="google_api_key">Google API Key:</label>
-            <input type="text" name="google_api_key" id="google_api_key" value="{{ setting.google_api_key or '' }}">
-        </div>
-        <h2>Review Sources</h2>
-        {% for i in range(1, 5) %}
-        <fieldset>
-            <legend>Pair {{ i }}</legend>
-            <div>
-                <label for="ta_identifier_{{i}}">TripAdvisor Identifier:</label>
-                <input type="text" name="ta_identifier_{{i}}" id="ta_identifier_{{i}}"
-                       value="{{ pairs[i]['TripAdvisor'].identifier if pairs[i].get('TripAdvisor') else '' }}">
-            </div>
-            <div>
-                <label for="ta_title_{{i}}">TripAdvisor Title:</label>
-                <input type="text" name="ta_title_{{i}}" id="ta_title_{{i}}"
-                       value="{{ pairs[i]['TripAdvisor'].title if pairs[i].get('TripAdvisor') else '' }}">
-            </div>
-            <div>
-                <label for="google_identifier_{{i}}">Google Identifier:</label>
-                <input type="text" name="google_identifier_{{i}}" id="google_identifier_{{i}}"
-                       value="{{ pairs[i]['Google'].identifier if pairs[i].get('Google') else '' }}">
-            </div>
-            <div>
-                <label for="google_title_{{i}}">Google Title:</label>
-                <input type="text" name="google_title_{{i}}" id="google_title_{{i}}"
-                       value="{{ pairs[i]['Google'].title if pairs[i].get('Google') else '' }}">
-            </div>
-        </fieldset>
-        {% endfor %}
-        <button type="submit">Save Settings</button>
-    </form>
+    </div>
 </body>
 </html>
